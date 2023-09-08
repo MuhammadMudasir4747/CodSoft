@@ -1,0 +1,59 @@
+import requests
+from tkinter import *
+from tkinter import messagebox
+
+def kelvin_to_celsius(kelvin):
+    celsius = kelvin - 273.15
+    return celsius
+
+def get_weather():
+    City = city_entry.get()
+
+    base_url = "https://api.openweathermap.org/data/2.5/weather?"
+    api_key = "Your-API-Key-Here"
+
+    url = base_url + "appid=" + api_key + "&q=" + City
+    try:
+        response = requests.get(url).json()
+        temp_kelvin = response['main']['temp']
+        temp_celsius = kelvin_to_celsius(temp_kelvin)
+        humidity = response['main']['humidity']
+        description = response['weather'][0]['description']
+        wind_speed = response['wind']['speed']
+
+        result_label.config(text=f"Temperature in {City} is {temp_celsius:.2f} Celsius")
+        humidity_label.config(text=f"Humidity in {City} is {humidity}%")
+        wind_label.config(text=f"Wind speed in {City} is {wind_speed} m/s")
+        weather_desc_label.config(text=f"General weather in {City} is {description}")
+
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred: {e}")
+
+root = Tk()
+root.config(bg='light blue')
+root.geometry('500x300')
+root.title("Weather Forecast Application")
+
+city_label = Label(root, text='Enter City Name', font='arial 12 bold')
+city_label.pack(pady=10)
+
+city_entry = Entry(root, font='arial 12 bold')
+city_entry.pack()
+
+get_weather_button = Button(root, command=get_weather, text="Get weather", font="Arial 12",
+                            bg='lightblue', fg='black', activebackground="teal", padx=5, pady=5)
+get_weather_button.pack(pady=10)
+
+result_label = Label(root, text="", font='arial 14 bold')
+result_label.pack()
+
+humidity_label = Label(root, text="", font='arial 14 bold')
+humidity_label.pack()
+
+wind_label = Label(root, text="", font='arial 14 bold')
+wind_label.pack()
+
+weather_desc_label = Label(root, text="", font='arial 14 bold')
+weather_desc_label.pack()
+
+root.mainloop()
