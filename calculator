@@ -1,0 +1,72 @@
+from tkinter import *
+
+expression = ""
+
+# Function to display pressed numbers
+def press(num):
+    global expression
+    expression = expression + str(num)
+    equation.set(expression)
+
+# Function to evaluate expressions
+def equalpress():
+    try:
+        global expression
+        total = str(eval(expression))
+        equation.set(total)
+        expression = ""
+    except:
+        equation.set("Error")
+        expression = ""
+
+# Function to clear values in entry box
+def clear():
+    global expression
+    expression = ""
+    equation.set("")
+
+# Function to handle keyboard input
+def key_event(event):
+    key = event.char
+    if key.isdigit() or key in "+-*/.":
+        press(key)
+    elif key == "\r":
+        equalpress()
+    elif key == "\x08":
+        expression = equation.get()
+        expression = expression[:-1]
+        equation.set(expression)
+
+root = Tk()
+root.title('Calculator')
+root.geometry('400x400')
+
+equation = StringVar()
+expression_field = Entry(root, textvariable=equation, justify='right', font=("Helvetica", 20))
+expression_field.grid(row=0, column=0, columnspan=4, padx=10, pady=10, ipadx=20, ipady=20)
+
+# Create buttons in a grid
+buttons = [
+    '7', '8', '9', '/',
+    '4', '5', '6', '*',
+    '1', '2', '3', '-',
+    '0', '.', '=', '+'
+]
+
+row_val = 1
+col_val = 0
+
+for button_text in buttons:
+    Button(root, text=button_text, padx=20, pady=20, font=("Helvetica", 15), command=lambda text=button_text: press(text) if text != "=" else equalpress()).grid(row=row_val, column=col_val)
+    col_val += 1
+    if col_val > 3:
+        col_val = 0
+        row_val += 1
+
+# Clear button
+Button(root, text="Clear", padx=20, pady=20, font=("Helvetica", 15), command=clear).grid(row=row_val, column=col_val, columnspan=2)
+
+# Bind keyboard events
+root.bind("<Key>", key_event)
+
+root.mainloop()
